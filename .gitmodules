@@ -1,0 +1,9 @@
+[submodule "upstream/nikitabobko"]
+	path = upstream/nikitabobko
+	url = https://github.com/nikitabobko/homebrew-tap.git
+[submodule "upstream/docker"]
+	path = upstream/docker
+	url = https://github.com/docker/homebrew-tap.git
+[submodule "upstream/FelixKratz"]
+	path = upstream/FelixKratz
+	url = https://github.com/FelixKratz/homebrew-formulae.git
