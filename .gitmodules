@@ -7,3 +7,6 @@
 [submodule "upstream/FelixKratz"]
 	path = upstream/FelixKratz
 	url = https://github.com/FelixKratz/homebrew-formulae.git
+[submodule "upstream/datadog-labs"]
+	path = upstream/datadog-labs
+	url = https://github.com/datadog-labs/homebrew-pack.git
