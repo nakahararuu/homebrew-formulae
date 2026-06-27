@@ -89,13 +89,14 @@ jobs:
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           
-          # 変更をインデックスに追加（submoduleのコミット変更と.rbファイルの変更）
+          # 変更をインデックスに追加
           git add .
           
-          # 差分があるかチェック
-          if ! git diff --cached --quiet; then
+          # Casks または Formula 配下に変更があるかチェック
+          # (upstream のみの変更の場合はコミット・プッシュしない)
+          if ! git diff --cached --quiet -- Casks Formula; then
             git commit -m "chore: auto-update submodules (1 week ago HEAD) and formulas"
             git push origin main
           else
-            echo "No changes detected. Skipping commit and push."
+            echo "No changes detected in Casks or Formula. Skipping commit and push."
           fi
