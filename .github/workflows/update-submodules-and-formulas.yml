@@ -1,0 +1,101 @@
+name: Update Submodules and Formulas
+
+on:
+  schedule:
+    # 1日1回、正午（JST 12:00 / UTC 3:00）に実行
+    - cron: '0 3 * * *'
+  workflow_dispatch: # 手動実行可能にする
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          submodules: false # submoduleはステップ内で個別に処理するためここでは取得しない
+
+      - name: Initialize submodules
+        run: |
+          git submodule update --init --recursive
+
+      - name: Update submodules to 1 week ago HEAD
+        run: |
+          # 各submoduleのパスを取得してループ処理
+          git config --file .gitmodules --get-regexp path | awk '{print $2}' | while read -r sub_path; do
+            echo "=========================================="
+            echo "Processing submodule: $sub_path"
+            echo "=========================================="
+            
+            pushd "$sub_path" > /dev/null
+            
+            # リモートの最新情報を取得（シャロークローンの場合はunshallowを試みる）
+            git fetch --unshallow origin 2>/dev/null || git fetch origin
+            
+            # デフォルトブランチを決定
+            if git rev-parse --verify origin/main >/dev/null 2>&1; then
+              DEFAULT_BRANCH="main"
+            elif git rev-parse --verify origin/master >/dev/null 2>&1; then
+              DEFAULT_BRANCH="master"
+            else
+              # フォールバックとしてリモートから取得
+              DEFAULT_BRANCH=$(git remote show origin | grep "HEAD branch" | sed 's/.*HEAD branch: //')
+            fi
+            echo "Default branch is: $DEFAULT_BRANCH"
+            
+            # 1週間前のコミットハッシュを取得
+            COMMIT_HASH=$(git log "origin/$DEFAULT_BRANCH" --before="1 week ago" -n 1 --format="%H")
+            
+            if [ -n "$COMMIT_HASH" ]; then
+              echo "Checking out commit $COMMIT_HASH (1 week ago)"
+              git checkout "$COMMIT_HASH"
+            else
+              echo "Warning: Could not find a commit from 1 week ago on origin/$DEFAULT_BRANCH"
+            fi
+            
+            popd > /dev/null
+          done
+
+      - name: Overwrite Cask and Formula files with upstream files
+        run: |
+          echo "=========================================="
+          echo "Overwriting Cask and Formula files"
+          echo "=========================================="
+          
+          # Casks と Formula 配下のすべての .rb ファイルを検索し、
+          # upstream配下に同名ファイルが存在すれば上書きコピーする
+          find Casks Formula -type f -name "*.rb" | while read -r dest_file; do
+            filename=$(basename "$dest_file")
+            src_file=$(find upstream -type f -name "$filename" | head -n 1)
+            
+            if [ -n "$src_file" ]; then
+              echo "Copying $src_file -> $dest_file"
+              cp "$src_file" "$dest_file"
+            else
+              echo "No matching file found in upstream for $filename"
+            fi
+          done
+
+      - name: Commit and push changes if any
+        run: |
+          echo "=========================================="
+          echo "Committing and pushing changes"
+          echo "=========================================="
+          
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          
+          # 変更をインデックスに追加（submoduleのコミット変更と.rbファイルの変更）
+          git add .
+          
+          # 差分があるかチェック
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: auto-update submodules (1 week ago HEAD) and formulas"
+            git push origin main
+          else
+            echo "No changes detected. Skipping commit and push."
+          fi
