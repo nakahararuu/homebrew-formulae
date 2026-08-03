@@ -68,10 +68,23 @@ jobs:
           
           # Casks と Formula 配下のすべての .rb ファイルを検索し、
           # upstream配下に同名ファイルが存在すれば上書きコピーする
+          #
+          # PINNED_FORMULAS: 致命的な不具合が判明したなどの理由で、
+          # 自動更新を一時停止し特定バージョンに固定しておきたいファイル名を列挙する。
+          # 解除する場合はここから該当ファイル名を削除すること。
+          # - sbx.rb: v0.34以降に致命的な不具合があるため0.33系に固定中 (2026-08-03〜)
+          PINNED_FORMULAS=("sbx.rb")
+
           find Casks Formula -type f -name "*.rb" | while read -r dest_file; do
             filename=$(basename "$dest_file")
+
+            if printf '%s\n' "${PINNED_FORMULAS[@]}" | grep -qx "$filename"; then
+              echo "Skipping $dest_file (pinned, see PINNED_FORMULAS)"
+              continue
+            fi
+
             src_file=$(find upstream -type f -name "$filename" | head -n 1)
-            
+
             if [ -n "$src_file" ]; then
               echo "Copying $src_file -> $dest_file"
               cp "$src_file" "$dest_file"
