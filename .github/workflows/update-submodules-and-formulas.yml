@@ -66,27 +66,10 @@ jobs:
           echo "Overwriting Cask and Formula files"
           echo "=========================================="
           
-          # バージョンを一時的に固定しているformula/caskは自動更新の対象外にする
-          # (致命的な不具合が解消されたら、ここから外して固定を解除する)
-          PINNED_FORMULAS=("sbx.rb")
-
           # Casks と Formula 配下のすべての .rb ファイルを検索し、
           # upstream配下に同名ファイルが存在すれば上書きコピーする
           find Casks Formula -type f -name "*.rb" | while read -r dest_file; do
             filename=$(basename "$dest_file")
-
-            pinned=false
-            for p in "${PINNED_FORMULAS[@]}"; do
-              if [ "$filename" = "$p" ]; then
-                pinned=true
-                break
-              fi
-            done
-            if [ "$pinned" = true ]; then
-              echo "Skipping pinned file: $dest_file"
-              continue
-            fi
-
             src_file=$(find upstream -type f -name "$filename" | head -n 1)
 
             if [ -n "$src_file" ]; then
