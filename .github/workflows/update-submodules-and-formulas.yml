@@ -68,7 +68,7 @@ jobs:
           
           # バージョンを一時的に固定しているformula/caskは自動更新の対象外にする
           # (致命的な不具合が解消されたら、ここから外して固定を解除する)
-          PINNED_FORMULAS=("sbx.rb")
+          PINNED_FORMULAS=()
 
           # Casks と Formula 配下のすべての .rb ファイルを検索し、
           # upstream配下に同名ファイルが存在すれば上書きコピーする
