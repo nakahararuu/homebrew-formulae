@@ -13,21 +13,21 @@ class Pup < Formula
 
   on_macos do
     if Hardware::CPU.arm?
-      url "https://github.com/DataDog/pup/releases/download/v1.23.1/pup_1.23.1_Darwin_arm64.tar.gz"
-      sha256 "21f03fb42939185af0ae88b0bc14e54d6e5d641bdbe23b404d9572519c30a07f"
+      url "https://github.com/DataDog/pup/releases/download/v1.23.6/pup_1.23.6_Darwin_arm64.tar.gz"
+      sha256 "2f06aa5fa19e519eb68c29c3b65737927af05ff7ea582b8c2ed4b7d89f10738f"
     else
-      url "https://github.com/DataDog/pup/releases/download/v1.23.1/pup_1.23.1_Darwin_x86_64.tar.gz"
-      sha256 "4dfc2a0bf8ca9a021887a50a19cf9a77869ab16cf308d4c78f554605dc68886a"
+      url "https://github.com/DataDog/pup/releases/download/v1.23.6/pup_1.23.6_Darwin_x86_64.tar.gz"
+      sha256 "ec6e102bd3e31bbc7e4fa647cfe91a6fd1cfd9c6d063c9abd85d4449d6d4d769"
     end
   end
 
   on_linux do
     if Hardware::CPU.arm?
-      url "https://github.com/DataDog/pup/releases/download/v1.23.1/pup_1.23.1_Linux_arm64.tar.gz"
-      sha256 "7f1d82f2f813ac1336ca3e47525a79e8c03d13759c7931e7219e3b79ee474cdb"
+      url "https://github.com/DataDog/pup/releases/download/v1.23.6/pup_1.23.6_Linux_arm64.tar.gz"
+      sha256 "c80f14f6e1fda8e794748027cb6048dbbd4ed66feca322edf9cd534d6d817d34"
     else
-      url "https://github.com/DataDog/pup/releases/download/v1.23.1/pup_1.23.1_Linux_x86_64.tar.gz"
-      sha256 "f1974c8480cce0b07f6fd312c534f05e086e20e7de93082cd7064fb70da44c0c"
+      url "https://github.com/DataDog/pup/releases/download/v1.23.6/pup_1.23.6_Linux_x86_64.tar.gz"
+      sha256 "9139fa76433098ebad13a1ae3776783fe39a88f5460e12fb4c21bdc45610c714"
     end
   end
 
